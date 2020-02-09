@@ -26,6 +26,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.hardware.biometrics.BiometricSourceType;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
