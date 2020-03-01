@@ -78,6 +78,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
     private FODAnimation mFODAnimation;
     private boolean mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
+    private boolean mShouldRemoveIconOnAOD;
 
     private boolean mIsBouncer;
     private boolean mIsDreaming;
@@ -113,9 +114,11 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
             if (dreaming) {
                 mBurnInProtectionTimer = new Timer();
                 mBurnInProtectionTimer.schedule(new BurnInProtectionTask(), 0, 60 * 1000);
+                if (mShouldRemoveIconOnAOD) resetFODIcon(false);
             } else if (mBurnInProtectionTimer != null) {
                 mBurnInProtectionTimer.cancel();
             }
+            if (mShouldRemoveIconOnAOD && !dreaming) resetFODIcon(true);
         }
 
         @Override
@@ -218,6 +221,9 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
         mUpdateMonitor.registerCallback(mMonitorCallback);
 
         mFODAnimation = new FODAnimation(context, mPositionX, mPositionY);
+
+        mShouldRemoveIconOnAOD = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SCREEN_OFF_FOD, 0) != 0;
 
     }
 
@@ -364,6 +370,23 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
         setKeepScreenOn(false);
     }
 
+    private void resetFODIcon(boolean show) {
+        if (show) {
+            setFODIcon();
+        } else {
+            this.setImageResource(0);
+        }
+    }
+
+    private void setFODIcon() {
+
+        if (mIsDreaming && mShouldRemoveIconOnAOD) {
+            return;
+        }
+
+        this.setImageResource(R.drawable.fod_icon_default);
+    }
+
     public void show() {
         if (!mUpdateMonitor.isScreenOn()) {
             // Keyguard is shown just after screen turning off
@@ -414,6 +437,8 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
     private void updateStyle() {
         mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
+        mShouldRemoveIconOnAOD = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SCREEN_OFF_FOD, 0) != 0;
         if (mFODAnimation != null) {
             mFODAnimation.update();
         }
