@@ -154,6 +154,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
         public void onBiometricHelp(int msgId, String helpString,
                 BiometricSourceType biometricSourceType) {
             if (msgId == -1){ // Auth error
+                hideCircle();
                 mHandler.post(() -> mFODAnimation.hideFODanimation());
             }
         }
