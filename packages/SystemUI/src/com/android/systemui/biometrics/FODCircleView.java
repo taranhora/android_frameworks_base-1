@@ -446,14 +446,6 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
     private void updateStyle() {
         mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
-        if (mFODAnimation != null) {
-            mFODAnimation.update();
-        }
-    }
-
-    private void updateStyle() {
-        mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
         mShouldRemoveIconOnAOD = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.SCREEN_OFF_FOD, 0) != 0;
         if (mFODAnimation != null) {
