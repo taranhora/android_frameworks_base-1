@@ -28,7 +28,6 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.PowerManager;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.view.Display;
@@ -87,9 +86,6 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
 
     private Handler mHandler;
 
-    private PowerManager mPowerManager;
-    private PowerManager.WakeLock mWakeLock;
-
     private Timer mBurnInProtectionTimer;
 
     private IFingerprintInscreenCallback mFingerprintInscreenCallback =
@@ -144,14 +140,7 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
 
         @Override
         public void onScreenTurnedOff() {
-            hide();
-        }
-
-        @Override
-        public void onScreenTurnedOn() {
-            if (mUpdateMonitor.isFingerprintDetectionRunning()) {
-                show();
-            }
+            hideCircle();
         }
     };
 
@@ -219,17 +208,6 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
     protected void onDraw(Canvas canvas) {
         canvas.drawCircle(mSize / 2, mSize / 2, mSize / 2.0f, mPaintFingerprint);
         super.onDraw(canvas);
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-
-        if (mIsCircleShowing) {
-            dispatchPress();
-        } else {
-            dispatchRelease();
-        }
     }
 
     @Override
@@ -370,11 +348,6 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
     }
 
     public void show() {
-        if (!mUpdateMonitor.isScreenOn()) {
-            // Keyguard is shown just after screen turning off
-            return;
-        }
-
         if (mIsBouncer) {
             // Ignore show calls when Keyguard pin screen is being shown
             return;
