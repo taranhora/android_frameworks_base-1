@@ -28,6 +28,7 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.view.Display;
@@ -85,6 +86,9 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
     private boolean mIsCircleShowing;
 
     private Handler mHandler;
+
+    private PowerManager mPowerManager;
+    private PowerManager.WakeLock mWakeLock;
 
     private Timer mBurnInProtectionTimer;
 
@@ -215,6 +219,17 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
     protected void onDraw(Canvas canvas) {
         canvas.drawCircle(mSize / 2, mSize / 2, mSize / 2.0f, mPaintFingerprint);
         super.onDraw(canvas);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        if (mIsCircleShowing) {
+            dispatchPress();
+        } else {
+            dispatchRelease();
+        }
     }
 
     @Override
@@ -349,8 +364,6 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
 
         invalidate();
 
-        dispatchRelease();
-
         updateAlpha();
 
         setKeepScreenOn(false);
@@ -392,6 +405,14 @@ public class FODCircleView extends ImageView implements TunerService.Tunable {
     private void updateAlpha() {
         if (mIsCircleShowing) {
             setAlpha(1.0f);
+        }
+    }
+
+    private void updateStyle() {
+        mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
+        if (mFODAnimation != null) {
+            mFODAnimation.update();
         }
     }
 
