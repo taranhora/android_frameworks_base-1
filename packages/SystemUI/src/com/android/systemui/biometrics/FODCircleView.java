@@ -25,8 +25,8 @@ import android.graphics.Paint;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
-import android.hardware.biometrics.BiometricSourceType;
 import android.graphics.PorterDuff;
+import android.hardware.biometrics.BiometricSourceType;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -379,9 +379,8 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
         setImageResource(R.drawable.fod_icon_default);
         setColorFilter(Color.argb(mCurDim,0,0,0),
                 PorterDuff.Mode.SRC_ATOP);
-        invalidate();
 
-        dispatchRelease();
+        invalidate();
 
         updateAlpha();
 
@@ -419,8 +418,6 @@ public class FODCircleView extends ImageView implements TunerService.Tunable, Co
         Dependency.get(TunerService.class).addTunable(this, SCREEN_BRIGHTNESS);
 
         mIsShowing = true;
-
-        updatePosition();
 
         dispatchShow();
         setDim(true);
